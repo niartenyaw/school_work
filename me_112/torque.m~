@@ -1,0 +1,22 @@
+function [rpm,t,p] = torque(t_max,p_max,s_max)
+
+rpm=[];
+t=[];
+p=[];
+w=rpm.*2*pi/60;
+
+for i=0:80
+    w=i*100*2*pi/60;
+    currT=t_max;
+    currP=
+    if currT*w>p_max
+        currT=p_max/w;
+    end
+    
+    rpm=[rpm i*100];
+    t=[t currT];
+    
+end
+
+
+end

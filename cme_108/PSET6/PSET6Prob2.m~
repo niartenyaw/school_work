@@ -1,0 +1,11 @@
+clear;
+
+[u,x]=solve(16);
+plot(x,u)
+
+[u_exact,x_exac]=solve(512);
+
+for i=1:6
+    [u,x
+    
+end

@@ -1,0 +1,33 @@
+
+nums=size(data);
+
+lumbar=data(:,128);
+kneeR=data(:,130);
+kneeL=data(:,132);
+sum=0;
+time_step=0.5/nums(2);
+
+for i=1:1424
+    sum=sum+(time_step)*(lumbar(i+1)+lumbar(i))/2;
+    sum=sum+(time_step)*(kneeR(i+1)+kneeR(i))/2;
+    sum=sum+(time_step)*(kneeL(i+1)+kneeL(i))/2;
+end
+sum*.001
+
+
+optimal=data(:,134);
+time=data(:,135);
+optimal_data=[];
+time_data=[];
+for i=1:94
+    optimal_data=[optimal_data optimal(i)];
+    time_data=[time_data time(i)];
+end
+
+time_mine=[];
+for
+
+plot(time_data,optimal_data)
+
+
+

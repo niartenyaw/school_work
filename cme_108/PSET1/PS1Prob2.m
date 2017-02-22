@@ -1,0 +1,17 @@
+clear;
+tol = 10^(-6);
+a = -2;
+b = 2;
+x0 = -1;
+x1 = 1;
+amount = 100000;
+p = 10000;
+n = 20;
+
+[x,err] = hybrid(@(t) poly5(t),a,b,x0,x1,tol);
+semilogy(err)
+x
+title('Error in Hybrid between Bisection and Secant Method')
+xlabel('Iterations')
+ylabel('Error')
+legend('Hybrid')

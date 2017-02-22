@@ -1,0 +1,34 @@
+clear;
+
+load hiking_trail;
+dx=X(2)-X(1);
+int=0;
+for i=1:length(X)
+    f(i)=evalfunc(X,Y,i);
+end
+
+for i=3:2:length(X)
+    if i > length(X)-1
+        break;
+    end
+    
+    sum=0;
+    sum=f(i-1)+4*f(i)+f(i;
+    
+    i=i+1;
+    dydx=(Y(i+1)-Y(i-1))/(X(i+1)-X(i-1));
+    D=sqrt(1+dydx^2+0.1*(exp(Y(i)-(X(i)-1)^2)*(3*pi/2*cos(3*pi*Y(i)/2)*dydx+sin(3*pi*Y(i)/2)*(dydx-2*X(i)+2)))^2);
+    m=0.1*exp(Y(i)-(X(i)-1)^2)*(sin(3*pi*Y(i)/2)*(2+dydx)+3*pi/2*cos(3*pi*Y(i)/2)*dydx)*dx;
+    sum=sum+4*exp(-m)*D;
+    
+    i=i+1;
+    dydx=(Y(i+1)-Y(i-1))/(X(i+1)-X(i-1));
+    D=sqrt(1+dydx^2+0.1*(exp(Y(i)-(X(i)-1)^2)*(3*pi/2*cos(3*pi*Y(i)/2)*dydx+sin(3*pi*Y(i)/2)*(dydx-2*X(i)+2)))^2);
+    m=0.1*exp(Y(i)-(X(i)-1)^2)*(sin(3*pi*Y(i)/2)*(2+dydx)+3*pi/2*cos(3*pi*Y(i)/2)*dydx)*dx;
+    sum=sum+exp(-m)*D;
+    i=i-1;
+    
+    int=int+(X(i+1)-X(i-1))/6*sum;
+end
+int
+

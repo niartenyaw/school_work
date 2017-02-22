@@ -1,0 +1,186 @@
+clear;
+close all
+
+load markers.mat;
+load forceplate.mat;
+h=1/120;
+g=9.81;
+
+filesize=size(markers);
+xx=0:1:filesize(1)-1;
+
+for i=1:filesize(1)
+    % X component of vector
+    HAT_vector(i,1)=markers(i,1)-markers(i,3);
+    % Y component of vector
+    HAT_vector(i,2)=markers(i,2)-markers(i,4);
+    % Normalize
+    length=sqrt(HAT_vector(i,2)^2+HAT_vector(i,1)^2);
+    HAT_vector(i,1)=HAT_vector(i,1)/length;
+    HAT_vector(i,2)=HAT_vector(i,2)/length;
+    % Calculate angle
+    theta4(i)=atan2(HAT_vector(i,2),HAT_vector(i,1));
+    
+    thigh_vector(i,1)=markers(i,3)-markers(i,5);
+    thigh_vector(i,2)=markers(i,4)-markers(i,6);
+    mag(i)=sqrt(thigh_vector(i,1)^2+thigh_vector(i,2)^2);
+    length=sqrt(thigh_vector(i,2)^2+thigh_vector(i,1)^2);
+    thigh_vector(i,1)=thigh_vector(i,1)/length;
+    thigh_vector(i,2)=thigh_vector(i,2)/length;
+    theta3(i)=atan2(thigh_vector(i,2),thigh_vector(i,1));
+    
+    shank_vector(i,1)=markers(i,5)-markers(i,7);
+    shank_vector(i,2)=markers(i,6)-markers(i,8);
+    length=sqrt(shank_vector(i,2)^2+shank_vector(i,1)^2);
+    shank_vector(i,1)=shank_vector(i,1)/length;
+    shank_vector(i,2)=shank_vector(i,2)/length;
+    theta2(i)=atan2(shank_vector(i,2),shank_vector(i,1));
+    
+    foot_vector(i,1)=markers(i,9)-markers(i,11);
+    foot_vector(i,2)=markers(i,10)-markers(i,12);
+    length=sqrt(foot_vector(i,2)^2+foot_vector(i,1)^2);
+    foot_vector(i,1)=foot_vector(i,1)/length;
+    foot_vector(i,2)=foot_vector(i,2)/length;
+    theta1(i)=atan2(-foot_vector(i,1),foot_vector(i,2));
+end
+
+figure;
+plot(xx,mag)
+title('Magnitude of thigh')
+xlabel('Time (s)')
+ylabel('Magnitude (m)')
+
+theta1=theta1';
+theta2=theta2';
+theta3=theta3';
+theta4=theta4';
+
+% Full angle calculations
+hip_angle=theta3-theta4;
+knee_angle=theta3-theta2;
+ankle_angle=theta1-theta2;
+
+% Plot Data
+figure;
+plot(xx'*h,hip_angle*180/pi)
+title('Joint Angles')
+axis([0 1.5 -50 80])
+hold all
+plot(xx'*h,knee_angle*180/pi)
+plot(xx'*h,ankle_angle*180/pi)
+legend('Hip','Knee','Ankle','Location','North')
+xlabel('Time (seconds)')
+ylabel('Angle (degrees)')
+
+% Heel on and Toe off lines
+y=-180:90:180;
+x=ones(5)*42*h;
+plot(x,y,'k')
+text(42*h+.01,-40,'heel-on','Color','k');
+x=ones(5)*128*h;
+plot(x,y,'k')
+text(128*h+.01,-40,'toe-off','Color','k');
+
+% Numerical Approx of the 4 angles
+t1D=deriv(theta1,h);
+t2D=deriv(theta2,h);
+t3D=deriv(theta3,h);
+t4D=deriv(theta4,h);
+
+t1DD=deriv2(theta1,h);
+t2DD=deriv2(theta2,h);
+t3DD=deriv2(theta3,h);
+t4DD=deriv2(theta4,h);
+
+% Numerical Approx of knee and ankle
+knee_tD=deriv(knee_angle,h);
+ankle_tD=deriv(ankle_angle,h);
+
+knee_tDD=deriv2(knee_angle,h);
+ankle_tDD=deriv2(ankle_angle,h);
+
+% Limb Calculations
+height=1.7526;
+mass=66.7;
+segment_mass(1)=mass*0.0145;
+segment_mass(2)=mass*0.0465;
+segment_mass(3)=mass*0.1;
+segment_mass(4)=mass*0.678;
+
+segment_length(1)=height*0.055;
+segment_length(2)=height*0.246;
+segment_length(3)=height*0.245;
+segment_length(4)=height*0.47;
+
+segment_COM_pos(1)=segment_length(1)*0.5;
+segment_COM_pos(2)=segment_length(2)*0.433;
+segment_COM_pos(3)=segment_length(3)*0.433;
+segment_COM_pos(4)=segment_length(4)*0.626;
+
+segment_MOI(1)=segment_mass(1)*(segment_length(1)*0.475)^2;
+segment_MOI(2)=segment_mass(2)*(segment_length(2)*0.302)^2;
+segment_MOI(3)=segment_mass(3)*(segment_length(3)*0.323)^2;
+segment_MOI(4)=segment_mass(4)*(segment_length(4)*0.496)^2;
+
+% Vert and Horz GRFs during stance phase
+filesize=size(forceplate);
+xx=(42:1:127)';
+for i=1:86
+    horz(i)=forceplate(xx(i),1);
+    vert(i)=forceplate(xx(i),2);
+end
+figure;
+plot(xx*h,horz)
+title('Horizontal GRF')
+xlabel('Time (seconds)')
+ylabel('Force (N)')
+
+figure;
+plot(xx*h,vert)
+title('Vertical GRF')
+xlabel('Time (seconds)')
+ylabel('Force (N)')
+
+
+Fx1=-horz;
+Fy1=-vert;
+
+for i=42:127
+    a(i-41)=markers(i,11)-markers(i,7);
+    l(i-41)=markers(i,12)-markers(i,8);
+    x1(i-41)=markers(i,11)-a(i-41);
+    y1(i-41)=markers(i,12)-l(i-41);
+    x2(i-41)=x1(i-41)+markers(i,7)-markers(i,5);
+    y2(i-41)=y1(i-41)+markers(i,8)-markers(i,6);
+    x3(i-41)=x2(i-41)+markers(i,5)-markers(i,3);
+    y3(i-41)=y2(i-41)+markers(i,6)-markers(i,4);
+    x4(i-41)=x3(i-41)+markers(i,3)-markers(i,1);
+    y4(i-41)=y3(i-41)+markers(i,4)-markers(i,2);
+end
+x1DD=deriv2(x1',h);
+y1DD=deriv2(y1',h);
+x2DD=deriv2(x2',h);
+y2DD=deriv2(y2',h);
+x3DD=deriv2(x3',h);
+y3DD=deriv2(y3',h);
+x4DD=deriv2(x4',h);
+y4DD=deriv2(y4',h);
+
+T1=-vert.*a-horz.*l;
+r=segment_COM_position;
+l=segment_length;
+m=segment_mass;
+
+for i=1:128-42
+    Fx2(i)=Fx1(i)+m(2).*x2DD(i+41);
+    Fy2(i)=Fy1(i)+m(2)*g+m(2).*y2DD(i+42);
+    T2(i)=T1(i)-Fy2(i)*r(2)*cos(theta2(i+41))...
+        +Fx2(i)*r(2)*sin(theta2(i+41))-Fy1*(l)
+end
+
+
+
+figure;
+plot(xx,T1)
+
+

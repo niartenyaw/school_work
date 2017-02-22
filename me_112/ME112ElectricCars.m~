@@ -1,0 +1,6 @@
+clear;
+torque_limit=220;
+power_limit=150;
+
+
+[x,y]=torque();

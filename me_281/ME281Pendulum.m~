@@ -1,0 +1,23 @@
+clear;
+L = 1;
+m = 1;
+g = 9.81;
+x
+
+theta0=2*pi/3;
+thetaD0=-1;
+thetaDD=-1;
+t=0:.01:.76;
+
+thetaD=thetaDD.*t+thetaD0;
+theta=1/2*thetaDD*t.^2 + thetaD0.*t+theta0;
+
+Fy=m*g*(sin(theta).^2) - L.*sin(theta)*m.*thetaD.^2;
+
+theta = theta*180/pi;
+
+plot(theta,Fy);
+
+title('Ground Reaction Force with Constant Acceleration');
+xlabel('Theta (Degrees)');
+ylabel('Vertical Reaction Force (Newtons)');

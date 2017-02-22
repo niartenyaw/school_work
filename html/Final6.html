@@ -1,0 +1,115 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>Final6</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2013-03-19"><meta name="m-file" content="Final6"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><pre class="codeinput">clear;
+N=16;
+A=zeros(N,N);
+
+<span class="keyword">for</span> i=1:N
+    A(i,i)=pi/2*(i^2+1);
+    l(i)=pi/i*(-1)^(i-1);
+<span class="keyword">end</span>
+c=A\l';
+
+x=linspace(0,pi,101);
+<span class="keyword">for</span> i=1:101
+    sum=0;
+    <span class="keyword">for</span> j=1:N
+        sum=sum+c(j)*sin(j*x(i));
+    <span class="keyword">end</span>
+    y(i)=sum;
+<span class="keyword">end</span>
+
+plot(x,y)
+title(<span class="string">'-u(2)(x)+u(x)=x u(0)=0,u(pi)=0'</span>)
+xlabel(<span class="string">'X'</span>)
+ylabel(<span class="string">'U'</span>)
+</pre><img vspace="5" hspace="5" src="Final6_01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.10<br></p></div><!--
+##### SOURCE BEGIN #####
+clear;
+N=16;
+A=zeros(N,N);
+
+for i=1:N
+    A(i,i)=pi/2*(i^2+1);
+    l(i)=pi/i*(-1)^(i-1);
+end
+c=A\l';
+
+x=linspace(0,pi,101);
+for i=1:101
+    sum=0;
+    for j=1:N
+        sum=sum+c(j)*sin(j*x(i));
+    end
+    y(i)=sum;
+end
+
+plot(x,y)
+title('-u(2)(x)+u(x)=x u(0)=0,u(pi)=0')
+xlabel('X')
+ylabel('U')
+##### SOURCE END #####
+--></body></html>

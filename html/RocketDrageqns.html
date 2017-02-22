@@ -1,0 +1,137 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>RocketDrageqns</title><meta name="generator" content="MATLAB 7.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2012-02-27"><meta name="DC.source" content="RocketDrageqns.m"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> g=RocketDrageqns(t,z)
+<span class="keyword">global</span> gr me ve
+
+M=z(1);
+y=z(2);
+V=z(3);
+
+Af=0.2;
+Cd=0.5;
+R=8.31432;<span class="comment">%Universal gas constant</span>
+T=288.15;<span class="comment">%Standard Temperature</span>
+
+ro=1.21*exp(-gr*y/(R*T));
+
+Fd=1/2*Cd*ro*V*V*Af;
+
+<span class="comment">%This shows when the rocket uses up all of its fuel mass</span>
+<span class="keyword">if</span> M&lt;250<span class="comment">%Determines when rocket should be staged</span>
+    <span class="keyword">if</span> M&lt;100<span class="comment">%Determines if fuel is gone</span>
+      dMdt=0;<span class="comment">%Once fuel is gone, no more mass is lost.</span>
+      dVdt=0;<span class="comment">%Once fuel is gone, the rocket can no longer accelerate.</span>
+    <span class="keyword">else</span>
+	  dMdt=-me;
+      dVdt=(-Fd+me*ve)/(M-50)-gr;
+    <span class="keyword">end</span>
+<span class="keyword">else</span>
+    dMdt=-me;
+    dVdt=(-Fd+me*ve)/M-gr;
+<span class="keyword">end</span>
+dydt=V;
+
+g=[dMdt dydt dVdt]'; <span class="comment">%this needs to be a column vector</span>
+</pre><pre class="codeoutput">Input argument "z" is undefined.
+
+Error in ==&gt; RocketDrageqns at 4
+M=z(1);
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.12<br></p></div><!--
+##### SOURCE BEGIN #####
+function g=RocketDrageqns(t,z)
+global gr me ve
+
+M=z(1);
+y=z(2);
+V=z(3);
+
+Af=0.2;
+Cd=0.5;
+R=8.31432;%Universal gas constant
+T=288.15;%Standard Temperature
+
+ro=1.21*exp(-gr*y/(R*T));
+
+Fd=1/2*Cd*ro*V*V*Af;
+
+%This shows when the rocket uses up all of its fuel mass
+if M<250%Determines when rocket should be staged
+    if M<100%Determines if fuel is gone
+      dMdt=0;%Once fuel is gone, no more mass is lost.
+      dVdt=0;%Once fuel is gone, the rocket can no longer accelerate.
+    else
+	  dMdt=-me;
+      dVdt=(-Fd+me*ve)/(M-50)-gr;
+    end
+else
+    dMdt=-me;
+    dVdt=(-Fd+me*ve)/M-gr;
+end
+dydt=V;
+
+g=[dMdt dydt dVdt]'; %this needs to be a column vector
+##### SOURCE END #####
+--></body></html>

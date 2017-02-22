@@ -1,0 +1,27 @@
+clear;
+
+%These initial x values create a straight line with the y values
+x=[0 2/10 3/10 6/10 1]'; 
+y=[0 2 3 6 10]';
+v=[8 6 2 1]';
+tol=10^(-6);
+p=ones(length(x),1);
+
+while abs(norm(p)) > tol
+    gradient=grad(x,y,v);
+    alpha = fminbnd(@(a) func(x,y,a,gradient),0,10);
+    p=-alpha*gradient;
+    x=x+p;
+end
+
+plot(x,y)
+title('Ray Path')
+xlabel('Horizontal Distance')
+ylabel('Vertical Distance')
+
+%Finding the time it takes the light to travel
+t = 0;
+for i = 1:length(v)
+    t = t + 1/v(i)*sqrt((y(i+1)-y(i))^2+(x(i+1)-x(i))^2);
+end
+t

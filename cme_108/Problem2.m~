@@ -1,0 +1,10 @@
+clear;
+N=256;
+intervals=[4 8 16 32 64 128 256 512];
+errors=[];
+
+for length(intervals)
+    
+end
+
+[T,Terr]=matrix(N);

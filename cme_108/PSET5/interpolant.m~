@@ -1,0 +1,9 @@
+function f = interpolant(a,b,c)
+
+h=101/length(a);
+
+x=linspace(
+
+
+end
+

@@ -1,0 +1,17 @@
+function int = Simpson(x,a,b,func)
+
+for i=1:length(x)
+    y(i)=func(x(i));
+end
+y
+int=0;
+for k=2:2:length(x)
+    hi=x(k)-x(k-1);
+    hi1=x(k+1-x(k);
+    term_1=y(k-1)*(hi+hi1)*(2*hi-hi1)/(6*hi);
+    term_2=y(k)*(hi+hi1)^3/(6*
+    
+end
+
+end
+

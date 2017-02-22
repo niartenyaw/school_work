@@ -1,0 +1,8 @@
+clear;
+N=16;
+A=zeros(N,N);
+
+for i=1:N
+    A(i,i)=pi/2*(i^2+1);
+    
+end

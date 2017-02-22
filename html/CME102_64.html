@@ -1,0 +1,128 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>CME102_64</title><meta name="generator" content="MATLAB 7.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2012-03-06"><meta name="DC.source" content="CME102_64.m"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [ output_args ] = untitled( input_args )
+<span class="comment">%CME 102 PSET #6-4</span>
+
+J0([2 4 9],5)
+
+<span class="keyword">function</span> a = J0coef(n)
+    a(1)=1;
+    a(2)=0;
+    <span class="keyword">for</span> k=3:n+1
+        a(k)=-a(k-2)/k^2;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> j = J0(x,n)
+    <span class="comment">% Compute the power series sum using a for loop.</span>
+    <span class="comment">% Note that this code allows for the input x to</span>
+    <span class="comment">% be a vector.</span>
+    j = 0;
+    a = J0coef(n);
+    <span class="keyword">for</span> i = 0:(n-1)
+      j = j + a(i+1) * x.^i;
+      <span class="comment">% ".^" makes the code work with a vector x</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">
+ans =
+
+    0.6267    0.3600   21.1600
+
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.12<br></p></div><!--
+##### SOURCE BEGIN #####
+function [ output_args ] = untitled( input_args )
+%CME 102 PSET #6-4
+
+J0([2 4 9],5)
+
+function a = J0coef(n)
+    a(1)=1;
+    a(2)=0;
+    for k=3:n+1
+        a(k)=-a(k-2)/k^2;
+    end
+end
+
+function j = J0(x,n)
+    % Compute the power series sum using a for loop.
+    % Note that this code allows for the input x to
+    % be a vector.
+    j = 0;
+    a = J0coef(n);
+    for i = 0:(n-1)
+      j = j + a(i+1) * x.^i;    
+      % ".^" makes the code work with a vector x
+    end
+end
+
+end
+
+
+##### SOURCE END #####
+--></body></html>
