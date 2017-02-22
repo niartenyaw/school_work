@@ -1,0 +1,280 @@
+# STATS 216, Homework #4
+========================================================
+### Aaron Wayne
+### March 11, 2014
+### Collaborators: Andrew Adams, Roberto Goizueta, Sam Finlayson
+--------------------------------------------------------
+
+## Problem 1
+
+#a
+
+```{r}
+load("../body.RData")
+set.seed(1)
+library(randomForest)
+
+test = sort(sample(1:nrow(X), 200))
+train = (1:nrow(X))[-test]
+
+mseWeightBag <- function(n, verbose = F) {
+    set.seed(1)
+    if (verbose & !(n%%10)) {
+        print(paste(c("Finished", n, "Records"), collapse = " "))
+    }
+    bag.weight <- randomForest(Y$Weight ~ ., data = X, subset = train, mtry = length(X), 
+        ntree = n, importance = TRUE)
+    yhat.bag = predict(bag.weight, newdata = X[-train, ])
+    mse.bag <- mean((yhat.bag - Y$Weight[-train])^2)
+
+    rf.weight <- randomForest(Y$Weight ~ ., data = X, subset = train, mtry = floor(sqrt(length(X))), 
+        ntree = n, importance = TRUE)
+    yhat.rf = predict(rf.weight, newdata = X[-train, ])
+    mse.rf <- mean((yhat.rf - Y$Weight[-train])^2)
+    cbind(mse.bag, mse.rf)
+}
+
+mse.bag.rf <- t(sapply(1:500, mseWeightBag, verbose = T))
+
+plot(mse.bag.rf[, 1], main = "Bagging MSE by # of Trees", type = "l", xlab = "Number of Trees", 
+    ylab = "MSE")
+lines(mse.bag.rf[, 2], col = "red")
+legend("topright", legend = c("Bag", "RF"), fill = c("black", "red"))
+
+rf.weight <- randomForest(Y$Weight ~ ., data = X, subset = train, mtry = floor(sqrt(length(X))), 
+    ntree = 500, importance = TRUE)
+
+bag.weight <- randomForest(Y$Weight ~ ., data = X, subset = train, mtry = length(X), 
+    ntree = 500, importance = TRUE)
+
+# Importance Plots
+varImpPlot(rf.weight)
+varImpPlot(bag.weight)
+
+# Increase MSE
+intersect(names(head(sort(importance(rf.weight)[, 1], decreasing = T), n = 5)), 
+    names(head(sort(importance(bag.weight)[, 1], decreasing = T), n = 5)))
+
+# RSS
+intersect(names(head(sort(importance(rf.weight)[, 2], decreasing = T), n = 5)), 
+    names(head(sort(importance(bag.weight)[, 2], decreasing = T), n = 5)))
+
+yhat.bag = predict(bag.weight, newdata = X[-train, ])
+(mse.bag <- mean((yhat.bag - Y$Weight[-train])^2))
+
+yhat.rf = predict(rf.weight, newdata = X[-train, ])
+(mse.rf <- mean((yhat.rf - Y$Weight[-train])^2))
+```
+Our HW # 3 results were as follows: PCR MSE: 10.03 PLRS MSE: 8.757 LASSO: 8.13
+
+It appears that all of these methods outperformed both our bag and our random forest.
+
+#d
+
+It appears from the plot above that there continues to be variance and the MSE continues to drop slightly. This implies that 500 may not be enough trees.
+
+##2
+
+#a
+
+```{r}
+dat.X <- data.frame(matrix(c(3, 4, 2, 2, 4, 4, 1, 4, 2, 1, 4, 3, 4, 1), byrow = T, 
+    ncol = 2))
+dat.Y <- c(rep(2, 4), rep(1, 3))
+dat <- data.frame(dat.X, Y = as.factor(dat.Y))
+
+plot(dat.X, type = "p", col = dat.Y)
+```
+#b
+```{r}
+library(e1071)
+
+svmfit <- svm(Y ~ ., data = dat, kernel = "linear", cost = 1e+50, scale = F)
+beta1 <- drop(t(svmfit$coefs) %*% dat.X[svmfit$index, 1])
+beta2 <- drop(t(svmfit$coefs) %*% dat.X[svmfit$index, 2])
+beta0 <- svmfit$rho
+
+plot(dat.X, type = "p", col = dat.Y)
+abline(beta0/beta2, -beta1/beta2)
+
+cat(paste(c("Formula :", -beta0/beta2, "+", beta1/beta2, "* X_1", "+", 1, "* X_2", 
+    "= 0"), collapse = " "))
+
+svmfit$index
+
+```
+#c
+```{r}
+# cat(paste(c('Classify to Red if', -beta0/beta2, '+', beta1/beta2, '* X_1'
+# ,'+', 1, '* X_2', '> 0, and Classify to Blue Otherwise'), collapse=' '))
+
+```
+
+Classify to Red if 0.500281643260406 + -1.00007681179829 * X_1 + 1 * X_2 > 0, and Classify to Blue Otherwise
+
+#d
+```{r}
+plot(dat.X, type = "p", col = dat.Y)
+abline(beta0/beta2, -beta1/beta2)
+abline((beta0 - 1)/beta2, -beta1/beta2, lty = 2)
+abline((beta0 + 1)/beta2, -beta1/beta2, lty = 2)
+
+#The margin is:
+(abs((1)/beta2)/sqrt((-beta1/beta2)^2 + 1))
+
+```
+
+#e
+
+The support vectors for the maximal margin classifier are (2,2), (4,2), and (4,4).
+
+#f
+
+The maximal marginal hyperplane only depends on the support vectors. Since the seventh observation is not a support vector, moving itn will not affect the classifier unless it is moved sufficiently to cross the boundary and become a support vector.
+
+#g
+```{r}
+svmfit <- svm(Y ~ ., data = dat, kernel = "linear", cost = 0.8, scale = F)
+beta1 <- drop(t(svmfit$coefs) %*% dat.X[svmfit$index, 1])
+beta2 <- drop(t(svmfit$coefs) %*% dat.X[svmfit$index, 2])
+beta0 <- svmfit$rho
+
+plot(dat.X, type = "p", col = dat.Y)
+abline(beta0/beta2, -beta1/beta2)
+
+cat(paste(c("Formula :", -beta0/beta2, "+", beta1/beta2, "* X_1", "+", 1, "* X_2", 
+    "= 0"), collapse = " "))
+```
+
+#h
+```{r}
+dat.X = rbind(dat.X, c(2, 3))
+dat.Y <- c(rep(2, 4), rep(1, 4))
+plot(dat.X, type = "p", col = dat.Y)
+
+
+```
+
+##3
+
+#a
+```{r}
+library(ISLR)
+set.seed(1)
+train <- sample(nrow(OJ), 800)
+dat.train <- OJ[train, ]
+dat.test <- OJ[-train, ]
+```
+
+#b
+```{r}
+svmfit <- svm(Purchase ~ ., data = dat.train, kernel = "linear", cost = 0.01)
+summary(svmfit)
+```
+There are 432 Support Vectors, which seems like a very large number.
+
+```{r}
+plot(dat.train)
+```
+With 800 observations and significant correlation in among many variables, it is perhaps not so surprising.
+
+#c
+```{r}
+(lin.svm.train.err <- 1 - mean(predict(svmfit) == dat.train$Purchase))
+(lin.svm.test.err <- 1 - mean(predict(svmfit, dat.test) == dat.test$Purchase))
+
+```
+
+#d
+```{r}
+tune.out <- tune(svm, Purchase ~ ., data = dat.train, kernel = "linear", ranges = list(cost = c(0.01, 
+    0.1, 1, 5, 10)))
+summary(tune.out)
+```
+Based on these costs, our best cost is 0.1 since the error is the lowest here.
+
+#e
+```{r}
+svmfit <- svm(Purchase ~ ., data = dat.train, kernel = "linear", cost = 0.1)
+summary(svmfit)
+
+1 - mean(predict(svmfit) == dat.train$Purchase)
+1 - mean(predict(svmfit, dat.test) == dat.test$Purchase)
+
+```
+It appears that we have slightly overfit the data relative to the cost of 0.01. Our test error has gone up while our training error has gone down.
+
+#f
+```{r}
+svmfit <- svm(Purchase ~ ., data = dat.train, kernel = "radial", cost = 0.01)
+
+1 - mean(predict(svmfit) == dat.train$Purchase)
+1 - mean(predict(svmfit, dat.test) == dat.test$Purchase)
+
+summary(tune(svm, Purchase ~ ., data = dat.train, kernel = "radial", ranges = list(cost = c(0.01, 
+    0.1, 1, 5, 10))))
+
+svmfit <- svm(Purchase ~ ., data = dat.train, kernel = "radial", cost = 5)
+
+(rad.svm.train.err <- 1 - mean(predict(svmfit) == dat.train$Purchase))
+(rad.svm.test.err <- 1 - mean(predict(svmfit, dat.test) == dat.test$Purchase))
+```
+The cost of 5 significantly reduces both the training and test error rates.
+
+#g
+```{r}
+svmfit <- svm(Purchase ~ ., data = dat.train, kernel = "polynomial", cost = 0.01, 
+    degree = 2)
+
+1 - mean(predict(svmfit) == dat.train$Purchase)
+1 - mean(predict(svmfit, dat.test) == dat.test$Purchase)
+
+summary(tune(svm, Purchase ~ ., data = dat.train, kernel = "polynomial", degree = 2, 
+    ranges = list(cost = c(0.01, 0.1, 1, 5, 10))))
+
+
+svmfit <- svm(Purchase ~ ., data = dat.train, kernel = "polynomial", cost = 10, 
+    degree = 2)
+
+(poly.svm.train.err <- 1 - mean(predict(svmfit) == dat.train$Purchase))
+(poly.svm.test.err <- 1 - mean(predict(svmfit, dat.test) == dat.test$Purchase))
+```
+The degree 2 polynomial significantly reduces the training and test error rates at cost 10 compared to cost 0.01. We may want to investigate costs larger than 10.
+
+#h
+```{r}
+tab <- rbind(c(lin.svm.train.err, lin.svm.test.err), c(rad.svm.train.err, rad.svm.test.err), 
+    c(poly.svm.train.err, poly.svm.test.err))
+
+rownames(tab) <- c("Linear", "Radial", "Polynomial")
+colnames(tab) <- c("Train Error", "Test Error")
+
+tab
+```
+The best choice is clearly either linear or radial kernel since they have the same and lowest test errors. With only this information, I would probably pick the radial kernel because of the higher training performance. That said, cross validation might reveal that the higher test performance is due to chance and that the radial kernel is actually the better choice.
+
+##4
+
+#a
+
+The proof for this is on the following page.
+
+#b
+
+Sum(W(Ck)) must decrease, or stay the same, with each successive iteration of the K-means algorithm because it is comprised of only two steps and both steps force Sum(W(Ck)) to either decrease or stay the same. The first step is to assign points to the nearest centroid. If a point is moved from one cluster to another, the variance within an individual cluster may increase, W(Ck), but the variance will be decreased over the sum Sum(W(Ck)). The second step is recomputing the centroid. By putting the centroid at the mean of all points in the cluster, we reduce the variance of that cluster as much as possible without reassigning observations. Both of these steps can make the Sum(W(Ck)) stay the same. In that case, the algorithm is done because no observations have been changed clusters and the centroids stay in the same place.
+
+#c
+
+This is a monotonically decreasing function with a finite set. Therefore, there will be at least a local minimum at which the algorithm must converge to. Since it is finite, there is no opportunity for the algorithm to run infinitely.
+
+#d
+```{r}
+x <- data.frame(matrix(c(1, 1, 3, 3, 1, 1, 1, 1), byrow = F, ncol = 2))
+y <- c(1, 2, 1, 2)
+plot(x, col = y)
+
+centroids <- data.frame(matrix(c(2, 2, 1, 1), byrow = F, ncol = 2))
+x
+y
+centroids
+```
