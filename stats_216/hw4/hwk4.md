@@ -1,18 +1,17 @@
+# STATS 216, Homework #4
+========================================================
+### Aaron Wayne
+### March 11, 2014
+### Collaborators: Andrew Adams, Roberto Goizueta, Sam Finlayson
+--------------------------------------------------------
+
+## Problem 1
+
+#a
+
 
 ```r
-load("/Users/aaronwayne/School/5.2 Winter 2014/STATS 216/body.RData")
-```
-
-```
-## Warning: cannot open compressed file '/Users/aaronwayne/School/5.2 Winter
-## 2014/STATS 216/body.RData', probable reason 'No such file or directory'
-```
-
-```
-## Error: cannot open the connection
-```
-
-```r
+load("../body.RData")
 set.seed(1)
 library(randomForest)
 ```
@@ -25,21 +24,7 @@ library(randomForest)
 ```r
 
 test = sort(sample(1:nrow(X), 200))
-```
-
-```
-## Error: object 'X' not found
-```
-
-```r
 train = (1:nrow(X))[-test]
-```
-
-```
-## Error: object 'X' not found
-```
-
-```r
 
 mseWeightBag <- function(n, verbose = F) {
     set.seed(1)
@@ -62,72 +47,87 @@ mse.bag.rf <- t(sapply(1:500, mseWeightBag, verbose = T))
 ```
 
 ```
-## Error: object 'X' not found
+## [1] "Finished 10 Records"
+## [1] "Finished 20 Records"
+## [1] "Finished 30 Records"
+## [1] "Finished 40 Records"
+## [1] "Finished 50 Records"
+## [1] "Finished 60 Records"
+## [1] "Finished 70 Records"
+## [1] "Finished 80 Records"
+## [1] "Finished 90 Records"
+## [1] "Finished 100 Records"
+## [1] "Finished 110 Records"
+## [1] "Finished 120 Records"
+## [1] "Finished 130 Records"
+## [1] "Finished 140 Records"
+## [1] "Finished 150 Records"
+## [1] "Finished 160 Records"
+## [1] "Finished 170 Records"
+## [1] "Finished 180 Records"
+## [1] "Finished 190 Records"
+## [1] "Finished 200 Records"
+## [1] "Finished 210 Records"
+## [1] "Finished 220 Records"
+## [1] "Finished 230 Records"
+## [1] "Finished 240 Records"
+## [1] "Finished 250 Records"
+## [1] "Finished 260 Records"
+## [1] "Finished 270 Records"
+## [1] "Finished 280 Records"
+## [1] "Finished 290 Records"
+## [1] "Finished 300 Records"
+## [1] "Finished 310 Records"
+## [1] "Finished 320 Records"
+## [1] "Finished 330 Records"
+## [1] "Finished 340 Records"
+## [1] "Finished 350 Records"
+## [1] "Finished 360 Records"
+## [1] "Finished 370 Records"
+## [1] "Finished 380 Records"
+## [1] "Finished 390 Records"
+## [1] "Finished 400 Records"
+## [1] "Finished 410 Records"
+## [1] "Finished 420 Records"
+## [1] "Finished 430 Records"
+## [1] "Finished 440 Records"
+## [1] "Finished 450 Records"
+## [1] "Finished 460 Records"
+## [1] "Finished 470 Records"
+## [1] "Finished 480 Records"
+## [1] "Finished 490 Records"
+## [1] "Finished 500 Records"
 ```
 
 ```r
 
 plot(mse.bag.rf[, 1], main = "Bagging MSE by # of Trees", type = "l", xlab = "Number of Trees", 
     ylab = "MSE")
-```
-
-```
-## Error: object 'mse.bag.rf' not found
-```
-
-```r
 lines(mse.bag.rf[, 2], col = "red")
-```
-
-```
-## Error: object 'mse.bag.rf' not found
-```
-
-```r
 legend("topright", legend = c("Bag", "RF"), fill = c("black", "red"))
 ```
 
-```
-## Error: plot.new has not been called yet
-```
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-11.png) 
 
 ```r
 
 rf.weight <- randomForest(Y$Weight ~ ., data = X, subset = train, mtry = floor(sqrt(length(X))), 
     ntree = 500, importance = TRUE)
-```
-
-```
-## Error: object 'X' not found
-```
-
-```r
 
 bag.weight <- randomForest(Y$Weight ~ ., data = X, subset = train, mtry = length(X), 
     ntree = 500, importance = TRUE)
-```
-
-```
-## Error: object 'X' not found
-```
-
-```r
 
 # Importance Plots
 varImpPlot(rf.weight)
 ```
 
-```
-## Error: object 'rf.weight' not found
-```
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-12.png) 
 
 ```r
 varImpPlot(bag.weight)
 ```
 
-```
-## Error: object 'bag.weight' not found
-```
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-13.png) 
 
 ```r
 
@@ -137,7 +137,7 @@ intersect(names(head(sort(importance(rf.weight)[, 1], decreasing = T), n = 5)),
 ```
 
 ```
-## Error: object 'bag.weight' not found
+## [1] "Hip.Girth"   "Knee.Girth"  "Waist.Girth" "Calf.Girth"
 ```
 
 ```r
@@ -148,45 +148,27 @@ intersect(names(head(sort(importance(rf.weight)[, 2], decreasing = T), n = 5)),
 ```
 
 ```
-## Error: object 'bag.weight' not found
+## [1] "Waist.Girth"   "Chest.Girth"   "Bicep.Girth"   "Forearm.Girth"
 ```
 
 ```r
 
 yhat.bag = predict(bag.weight, newdata = X[-train, ])
-```
-
-```
-## Error: object 'bag.weight' not found
-```
-
-```r
 (mse.bag <- mean((yhat.bag - Y$Weight[-train])^2))
 ```
 
 ```
-## Error: object 'yhat.bag' not found
+## [1] 11.26
 ```
 
 ```r
 
 yhat.rf = predict(rf.weight, newdata = X[-train, ])
-```
-
-```
-## Error: object 'rf.weight' not found
-```
-
-```r
 (mse.rf <- mean((yhat.rf - Y$Weight[-train])^2))
 ```
 
 ```
-## Error: object 'yhat.rf' not found
-```
-
-```r
-
+## [1] 10.57
 ```
 
 Our HW # 3 results were as follows: PCR MSE: 10.03 PLRS MSE: 8.757 LASSO: 8.13
